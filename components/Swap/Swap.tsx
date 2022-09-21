@@ -1,12 +1,83 @@
+
+import { utils } from "@project-serum/anchor";
+import { useProgram } from "../../hooks/useProgram";
+import {mint1,mint2,feeAccount} from '../utils/constant'
+import {PublicKey} from '@solana/web3.js';
+import * as token from "@solana/spl-token"
+import * as anchor from "@project-serum/anchor";
 import React, { useEffect, useState, Fragment } from "react";
 import { MdOutlineSwapVert } from "react-icons/md";
 import { Listbox, Transition } from "@headlessui/react";
 import { MdArrowDropDown } from "react-icons/md";
 import Image from "next/image";
-import Usdt from "../../node_modules/cryptocurrency-icons/svg/color/usdt.svg";
-import Usdc from "../../node_modules/cryptocurrency-icons/svg/color/usdc.svg";
-import Sol from "../../node_modules/cryptocurrency-icons/svg/color/sol.svg";
-import Btc from "../../node_modules/cryptocurrency-icons/svg/color/btc.svg";
+
+import Usdt from "cryptocurrency-icons"
+// import Usdt from "../../node_modules/cryptocurrency-icons/svg/color/usdt.svg";
+// import Usdc from "../../node_modules/cryptocurrency-icons/svg/color/usdc.svg";
+// // import Sol from "../../node_modules/cryptocurrency-icons/svg/color/sol.svg";
+// import Btc from "../../node_modules/cryptocurrency-icons/svg/color/btc.svg";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+const utf8 = utils.bytes.utf8;
+
+const Swap = () => {
+  const { program, wallet, connection } = useProgram();
+
+  const swap = async () => {
+    if (!wallet){
+      return
+    }
+    if (!program){
+      return
+  }
+
+  const [amm,_ammBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("amm"),mint1.toBuffer(),mint2.toBuffer()],
+      program.programId
+  );
+
+  const [poolAuthority,_bump] = await PublicKey.findProgramAddress(
+    [utf8.encode("authority"),amm.toBuffer()],
+    program.programId
+  );
+
+  const [vaultSource,_vault0bump] = await PublicKey.findProgramAddress(
+    [utf8.encode("vault0"),amm.toBuffer()],
+    program.programId
+  );
+
+  const [vaultDest,_vault1bump] =  await PublicKey.findProgramAddress(
+    [utf8.encode("vault1"),amm.toBuffer()],
+    program.programId
+  );
+
+  const [poolMint,poolBump] = await PublicKey.findProgramAddress(
+    [utf8.encode("pool_mint"),amm.toBuffer()],
+    program.programId
+  );
+
+  const userSrcATA = await token.getAssociatedTokenAddress(mint1, wallet.publicKey)
+  const userDstATA = await token.getAssociatedTokenAddress(mint2,wallet.publicKey)
+
+  await program.rpc.swap(
+    new anchor.BN(amount),
+    new anchor.BN(SWAP_AMOUNT_IN),
+    {
+    accounts : {
+        poolAuthority : poolAuthority ,
+        amm : amm ,
+        vaultSourceInfo : vaultSource,
+        vaultDestinationInfo : vaultDest,
+        swapSource : userSrcATA ,
+        swapDestination : userDstATA ,
+        poolMint : poolMint,
+        feeAccount : feeAccount,
+        owmer : wallet.publicKey ,
+        tokenProgram : TOKEN_PROGRAM_ID,
+        hostFeeAccount : feeAccount,
+    }
+  })
+
+      
 
 interface Props {
   id: number;
@@ -184,3 +255,5 @@ const Swap: React.FC = () => {
 };
 
 export default Swap;
+
+
