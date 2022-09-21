@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useRouter } from "next/router";
 
 const Header: React.FC = () => {
