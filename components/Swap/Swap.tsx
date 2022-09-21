@@ -11,7 +11,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { MdArrowDropDown } from "react-icons/md";
 import Image from "next/image";
 
-import Usdt from "cryptocurrency-icons"
+import {Usdt} from "cryptocurrency-icons"
 // import Usdt from "../../node_modules/cryptocurrency-icons/svg/color/usdt.svg";
 // import Usdc from "../../node_modules/cryptocurrency-icons/svg/color/usdc.svg";
 // // import Sol from "../../node_modules/cryptocurrency-icons/svg/color/sol.svg";
