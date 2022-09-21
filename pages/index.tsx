@@ -1,11 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-<<<<<<< HEAD
-import Header from '../Header'
-=======
 import Header from '../components/Header'
->>>>>>> upstream/main
-import Swap from '../components/Swap/Swap'
+import Swap from "../components/Swap/Swap"
 
 const Home: NextPage = () => {
   return (
