@@ -45,9 +45,10 @@ const Header: React.FC = () => {
       </div>
 
       <div>
-        <button className="bg-[#9A00EA] hover:bg-opacity-70 px-4 py-2 md:px-6 md:py-3 rounded-[40px] font-bold transition-all">
+        {/* <button className="bg-[#9A00EA] hover:bg-opacity-70 px-4 py-2 md:px-6 md:py-3 rounded-[40px] font-bold transition-all">
           Connect Wallet
-        </button>
+        </button> */}
+        <WalletMultiButton />
       </div>
     </div>
   );
