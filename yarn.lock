@@ -52,6 +52,11 @@
   "resolved" "https://registry.npmjs.org/@hapi/bourne/-/bourne-2.1.0.tgz"
   "version" "2.1.0"
 
+"@headlessui/react@^1.7.2":
+  "integrity" "sha512-snLv2lxwsf2HNTOBNgHYdvoYZ3ChJE8QszPi1d/hl9js8KrFrUulTaQBfSyPbJP5BybVreWh9DxCgz9S0Z6hKQ=="
+  "resolved" "https://registry.npmjs.org/@headlessui/react/-/react-1.7.2.tgz"
+  "version" "1.7.2"
+
 "@humanwhocodes/config-array@^0.10.4":
   "integrity" "sha512-mXAIHxZT3Vcpg83opl1wGlVZ9xydbfZO3r5YfRSH6Gpp2J/PfdBP0wbDa2sO6/qRbcalpoevVyW6A/fI6LfeMw=="
   "resolved" "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.10.4.tgz"
@@ -2049,6 +2054,11 @@
   "integrity" "sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw=="
   "resolved" "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz"
   "version" "4.1.1"
+
+"cryptocurrency-icons@^0.18.1":
+  "integrity" "sha512-dvR5O8JOmav3559Yb0Igpkia+3vpt/aeNvMu5ZIVUG2Bzpq9wNcOJRIQas49XJrPjtZ98GAEn3aDQO+w7uhS2w=="
+  "resolved" "https://registry.npmjs.org/cryptocurrency-icons/-/cryptocurrency-icons-0.18.1.tgz"
+  "version" "0.18.1"
 
 "cssesc@^3.0.0":
   "integrity" "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="

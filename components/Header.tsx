@@ -1,13 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useRouter } from "next/router";
 
 const Header: React.FC = () => {
   const router = useRouter();
 
   return (
-    <div className="flex justify-between items-center px-4 md:px-12 py-8">
+    <div className="flex justify-between items-center px-4 md:px-12 py-8 fixed w-full z-[1000000]">
       <div className="flex items-center gap-x-12">
         <div className="text-3xl font-bold">LOGO</div>
 
@@ -16,9 +16,9 @@ const Header: React.FC = () => {
             <Link href="/swap">
               <a
                 className={
-                  (router.pathname === "/"
+                  router.pathname === "/"
                     ? "text-[#14b9f4] font-semibold"
-                    : "hover:text-[#14b9f4] text-white transition-all font-semibold")
+                    : "hover:text-[#14b9f4] text-white transition-all font-semibold"
                 }
               >
                 Swap
@@ -27,7 +27,7 @@ const Header: React.FC = () => {
           </div>
 
           <div>
-            <Link href="/pools">
+            <Link href="/liquidity">
               <a className="hover:text-[#14b9f4] transition-all font-semibold">
                 Liquidity
               </a>
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
           </div>
 
           <div>
-            <Link href="/farm">
+            <Link href="/pools">
               <a className="hover:text-[#14b9f4] transition-all font-semibold">
                 Pools
               </a>
@@ -45,9 +45,7 @@ const Header: React.FC = () => {
       </div>
 
       <div>
-        <button className="bg-[#9A00EA] hover:bg-opacity-70 px-4 py-2 md:px-6 md:py-3 rounded-[40px] font-bold transition-all">
-          Connect Wallet
-        </button>
+        <WalletMultiButton />
       </div>
     </div>
   );
