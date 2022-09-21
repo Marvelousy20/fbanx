@@ -1,12 +1,10 @@
 import React from 'react'
-import Header from '../Header'
+// import Header from '../H'
 
 const swap = () => {
   return (
     <div>
-        <Header />
-
-        
+        {/* <Header /> */}
     </div>
   )
 }

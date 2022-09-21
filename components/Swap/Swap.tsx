@@ -65,9 +65,9 @@ const Swap: React.FC = () => {
             }}
             className="h-full rounded-3xl p-4"
           >
-            <div>
-              <p className="font-bold mb-4">Swap</p>
 
+            <form>
+              <p className="font-bold mb-4">Swap</p>
               {/* From */}
 
               <div className="bg-[#141041] relative p-3 rounded-2xl h-[100px]">
@@ -171,7 +171,11 @@ const Swap: React.FC = () => {
                   <p>0</p>
                 </div>
               </div>
-            </div>
+
+              <button>
+                
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -180,7 +184,3 @@ const Swap: React.FC = () => {
 };
 
 export default Swap;
-
-//  background-image: linear-gradient(140.14deg, rgba(0, 182, 191, 0.15) 0%, rgba(27, 22, 89, 0.1) 86.61%), linear-gradient(321.82deg, #18134D 0%, #1B1659 100%);
-
-//  background-image: linear-gradient(var(--gradient-rotate, 246deg), #da2eef 7.97%, #2b6aff 49.17%, #39d0d8 92.1%);
