@@ -1,5 +1,5 @@
 import React from 'react'
-import Header from '../components/Header.tsx/header'
+import Header from '../Header'
 
 const swap = () => {
   return (
