@@ -15,6 +15,8 @@ import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
 
+import { fbanxMint, usdcMint, usdtMint, solMint } from "./const";
+
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const utf8 = utils.bytes.utf8;
 
@@ -24,17 +26,17 @@ interface Props {
 }
 
 const FromItems = [
-  { id: 1, name: "FBANX", icon: Btc },
-  { id: 2, name: "USDT", icon: Usdt },
-  { id: 3, name: "USDC", icon: Usdc },
-  { id: 4, name: "SOL", icon: Sol },
+  { id: 1, name: "FBANX", icon: Btc, address: fbanxMint },
+  { id: 2, name: "USDT", icon: Usdt, address: usdtMint },
+  { id: 3, name: "USDC", icon: Usdc, address: usdcMint },
+  { id: 4, name: "SOL", icon: Sol, address: solMint },
 ];
 
 const ToItems = [
-  { id: 1, name: "FBANX", icon: Btc },
-  { id: 2, name: "USDT", icon: Usdt },
-  { id: 3, name: "USDC", icon: Usdc },
-  { id: 4, name: "SOL", icon: Sol },
+  { id: 1, name: "FBANX", icon: Btc, address: fbanxMint },
+  { id: 2, name: "USDT", icon: Usdt, address: usdtMint },
+  { id: 3, name: "USDC", icon: Usdc, address: usdcMint },
+  { id: 4, name: "SOL", icon: Sol, address: solMint },
 ];
 
 const Swap = () => {
@@ -42,6 +44,10 @@ const Swap = () => {
   const [swapFrom, setSwapFrom] = useState<Props>(FromItems[0]);
   const [swapTo, setSwapTo] = useState<Props>(ToItems[0]);
   const [value, setValue] = useState<number>(0);
+  const [mintSource, setMintSource] = useState<PublicKey>(FromItems[0].address);
+  const [mintDestination, setMintDestination] = useState<PublicKey>(
+    ToItems[0].address
+  );
 
   const handleSwitch = () => {
     setReserve(!reverse);
@@ -62,7 +68,7 @@ const Swap = () => {
     }
 
     const [amm, _ammBump] = await PublicKey.findProgramAddress(
-      [utf8.encode("amm"), mint1.toBuffer(), mint2.toBuffer()],
+      [utf8.encode("amm"), mintSource.toBuffer(), mintDestination.toBuffer()],
       program.programId
     );
 
@@ -97,7 +103,7 @@ const Swap = () => {
 
     await program.rpc.swap(
       new anchor.BN(value),
-      new anchor.BN(SWAP_AMOUNT_IN),
+      // new anchor.BN(SWAP_AMOUNT_IN),
       {
         accounts: {
           poolAuthority: poolAuthority,
@@ -188,7 +194,10 @@ const Swap = () => {
                 </div>
 
                 <div className="flex justify-end">
-                  <button className="bg-[#512DA8] px-3 py-1 rounded hover:bg-opacity-80">
+                  <button
+                    type="button"
+                    className="bg-[#512DA8] px-3 py-1 rounded hover:bg-opacity-80"
+                  >
                     MAX
                   </button>
                 </div>
