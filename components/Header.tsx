@@ -28,7 +28,12 @@ const Header: React.FC = () => {
 
           <div>
             <Link href="/liquidity">
-              <a className="hover:text-[#14b9f4] transition-all font-semibold">
+              <a className={
+                  router.pathname === "/liquidity"
+                    ? "text-[#14b9f4] font-semibold"
+                    : "hover:text-[#14b9f4] text-white transition-all font-semibold"
+                }
+              >
                 Liquidity
               </a>
             </Link>

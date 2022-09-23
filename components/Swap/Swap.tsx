@@ -1,6 +1,6 @@
 import { utils } from "@project-serum/anchor";
 import { useProgram } from "../../hooks/useProgram";
-import { mint1, mint2, feeAccount } from "../../utils/constant";
+import {  feeAccount } from "../../utils/constant";
 import { PublicKey } from "@solana/web3.js";
 import * as token from "@solana/spl-token";
 import * as anchor from "@project-serum/anchor";
@@ -9,16 +9,23 @@ import { MdOutlineSwapVert } from "react-icons/md";
 import { Listbox, Transition } from "@headlessui/react";
 import { MdArrowDropDown } from "react-icons/md";
 import Image from "next/image";
-
-
+import * as Web3 from '@solana/web3.js'
 
 
 import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
 import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
+
+
+
+import { fbanxMint, usdcMint, usdtMint, solMint } from "./const";
+
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const utf8 = utils.bytes.utf8;
+const tokenAddress = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
+
+const tokenPublicKey = new Web3.PublicKey(tokenAddress);
 
 interface Props {
   id: number;
@@ -26,24 +33,30 @@ interface Props {
 }
 
 const FromItems = [
-  { id: 1, name: "FBANX", icon: Btc },
-  { id: 2, name: "USDT", icon: Usdt },
-  { id: 3, name: "USDC", icon: Usdc },
-  { id: 4, name: "SOL", icon: Sol },
+  { id: 1, name: "FBANX", icon: Btc, address: fbanxMint },
+  { id: 2, name: "USDT", icon: Usdt, address: usdtMint },
+  { id: 3, name: "USDC", icon: Usdc, address: usdcMint },
+  { id: 4, name: "SOL", icon: Sol, address: solMint },
 ];
 
 const ToItems = [
-  { id: 1, name: "FBANX", icon: Btc },
-  { id: 2, name: "USDT", icon: Usdt },
-  { id: 3, name: "USDC", icon: Usdc },
-  { id: 4, name: "SOL", icon: Sol },
+  { id: 1, name: "FBANX", icon: Btc, address: fbanxMint },
+  { id: 2, name: "USDT", icon: Usdt, address: usdtMint },
+  { id: 3, name: "USDC", icon: Usdc, address: usdcMint },
+  { id: 4, name: "SOL", icon: Sol, address: solMint },
 ];
 
 const Swap = () => {
+  const [balance, setBalance] = useState(0)
+  const [tokenBalance, setTokenBalance] = useState(0)
   const [reverse, setReserve] = useState<boolean>(false);
   const [swapFrom, setSwapFrom] = useState<Props>(FromItems[0]);
   const [swapTo, setSwapTo] = useState<Props>(ToItems[0]);
   const [value, setValue] = useState<number>(0);
+  const [mintSource, setMintSource] = useState<PublicKey>(FromItems[0].address);
+  const [mintDestination, setMintDestination] = useState<PublicKey>(
+    ToItems[0].address
+  );
 
   const handleSwitch = () => {
     setReserve(!reverse);
@@ -55,6 +68,39 @@ const Swap = () => {
 
   const { program, wallet, connection } = useProgram();
 
+  const showBalance = async() => {
+    if (!wallet) {
+      return;
+    }
+
+    connection.getBalance(wallet.publicKey).then(balance => {
+      setBalance(balance/Web3.LAMPORTS_PER_SOL)
+    })
+  } 
+
+  const showTokenBalance = async() => {
+    if (!wallet) {
+      return;
+    }
+    connection.getParsedTokenAccountsByOwner(
+      wallet.publicKey, { mint: tokenPublicKey }
+    ).then(balance => {
+      setTokenBalance(balance.value[0]?.account.data.parsed.info.tokenAmount.uiAmount)
+      console.log(balance)
+    })
+    
+  } 
+
+  showBalance()
+  
+  
+  
+
+  
+  // connection.getParsedTokenAccountsByOwner(
+  //   wallet.publicKey, { mint: tokenPublicKey }
+  // );
+
   const swaps = async () => {
     if (!wallet) {
       return;
@@ -63,8 +109,14 @@ const Swap = () => {
       return;
     }
 
+    
+
+    connection.getParsedTokenAccountsByOwner(
+      wallet.publicKey, { mint: tokenPublicKey }
+    );
+
     const [amm, _ammBump] = await PublicKey.findProgramAddress(
-      [utf8.encode("amm"), mint1.toBuffer(), mint2.toBuffer()],
+      [utf8.encode("amm"), mintSource.toBuffer(), mintDestination.toBuffer()],
       program.programId
     );
 
@@ -89,11 +141,11 @@ const Swap = () => {
     );
 
     const userSrcATA = await token.getAssociatedTokenAddress(
-      mint1,
+      mintSource,
       wallet.publicKey
     );
     const userDstATA = await token.getAssociatedTokenAddress(
-      mint2,
+      mintDestination,
       wallet.publicKey
     );
 
@@ -147,7 +199,7 @@ const Swap = () => {
               <div className="bg-[#141041] relative p-3 rounded-2xl h-[100px]">
                 <div className="flex justify-between">
                   <p>From</p>
-                  <p>Balance: 0</p>
+                  <p>{`Balance: ${balance} SOL`}</p>
                 </div>
 
                 <div className="flex relative justify-between">
@@ -190,7 +242,10 @@ const Swap = () => {
                 </div>
 
                 <div className="flex justify-end">
-                  <button className="bg-[#512DA8] px-3 py-1 rounded hover:bg-opacity-80">
+                  <button
+                    type="button"
+                    className="bg-[#512DA8] px-3 py-1 rounded hover:bg-opacity-80"
+                  >
                     MAX
                   </button>
                 </div>
@@ -214,7 +269,7 @@ const Swap = () => {
               <div className="bg-[#141041] p-3 rounded-2xl h-[100px]">
                 <div className="flex justify-between">
                   <p>To</p>
-                  <p>Balance: 0</p>
+                  <p>{`Balance: ${tokenBalance} SOL`}</p>
                 </div>
 
                 <div className="flex justify-between">
