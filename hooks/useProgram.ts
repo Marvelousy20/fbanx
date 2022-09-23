@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Connection, PublicKey } from "@solana/web3.js";
+import {  PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 
 const idl = require('../public/idl.json');
