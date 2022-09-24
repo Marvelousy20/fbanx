@@ -1,89 +1,108 @@
+return;
 import React, { useState, useEffect, Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { utils } from "@project-serum/anchor";
 import { BiCaretDown } from "react-icons/bi";
 import { useProgram } from "../../hooks/useProgram";
-import { Connection, PublicKey } from "@solana/web3.js";
-import * as tk from "@solana/spl-token";
+import { Connection, PublicKey } from '@solana/web3.js';
+import * as tk from "@solana/spl-token"
 import * as anchor from "@project-serum/anchor";
 
 import Image from "next/image";
-import { tokens } from "./const";
-
+import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
+import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
+import Sol from "cryptocurrency-icons/svg/color/sol.svg";
+import Btc from "cryptocurrency-icons/svg/color/btc.svg";
 import { getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const TRADING_FEE_NUMERATOR = 25;
 const TRADING_FEE_DENOMINATOR = 10000;
 
-const utf8 = utils.bytes.utf8;
+const utf8 = utils.bytes.utf8
 import { Switch } from "@headlessui/react";
+
 import RemoveLiquidity from "./RemoveLiquidity";
+
 
 interface TokenProps {
   id: number;
-  tokenName: string;
-  icon: any;
   name: string;
-  tokenAddress: PublicKey;
 }
+
+const tokens = [
+  {
+    id: 1,
+    name: "FBNX/USDT",
+    poolAddress: "",
+    subToken: [
+      { id: 0, tokenName: "FBNX/USDT", icon: Btc, name: "tokens" },
+      { id: 1, tokenName: "FBNX", icon: Btc, name: "tokens" },
+      { id: 2, tokenName: "USDT", icon: Usdt, name: "tokens" },
+    ],
+  },
+
+  {
+    id: 2,
+    name: "FBNX/USDC",
+    poolAddress: "",
+    subToken: [
+      { id: 0, tokenName: "FBNX/USDC", icon: Btc, name: "tokens" },
+      { id: 1, tokenName: "FBNX", icon: Btc, name: "tokens" },
+      { id: 2, tokenName: "USDC", icon: Usdc, name: "tokens" },
+    ],
+  },
+  {
+    id: 3,
+    name: "FBNX/SOL",
+    poolAddress: "",
+    subToken: [
+      { id: 0, tokenName: "FBNX/SOL", icon: Btc, name: "tokens" },
+      { id: 1, tokenName: "FBNX", icon: Btc, name: "tokens" },
+      { id: 2, tokenName: "SOL", icon: Sol, name: "tokens" },
+    ],
+  },
+];
+
+// const mintPool = [{
+//   id:1,
+//   name : 'FBNX/USDT',
+//   mint1 :
+// }]
 
 const Liquidity = () => {
   const [removeLiquidity, setRemoveLiquidity] = useState(false);
-
-  // Selected pair state
   const [selectedTokens, setSelectedTokens] = useState(tokens[0]);
-
-  // Selected pair subToken state (It's going to have three arrays)
   const [selectedSubTokens, setSelectedSubTokens] = useState(
-    selectedTokens?.subToken
+    selectedTokens.subToken
   );
-  // Handle selected subtoken object
-  const [token, setToken] = useState<TokenProps>(selectedSubTokens[0]);
-  // Handles radio selection
   const [selectedRadio, setSelectedRadio] = useState(
-    selectedSubTokens[0]?.tokenName
+    selectedSubTokens[0].tokenName
   );
-  const [userAmount, setUserAmount] = useState(0);
-
-  // console.log("selectedSubToken:", selectedSubTokens);
-  // console.log("selectedToken:", selectedTokens);
-  // console.log("selectedRadio", selectedRadio);
-  // console.log("token", token);
-
-  const handleValue = (e: React.FormEvent) => {
-    setUserAmount(Number((e.target as HTMLInputElement).value));
-  };
+  const [token, setToken] = useState(selectedSubTokens[0]);
+  console.log("selectedSubToken:", selectedSubTokens);
+  console.log("selectedToken:", selectedTokens);
+  console.log("selectedRadio", selectedRadio);
+  const { program, wallet, connection } = useProgram();
+  console.log("token", token);
 
   const handleTokenName = (
-    e: React.ChangeEvent<HTMLInputElement> | null,
+    e: React.ChangeEvent<HTMLInputElement>,
     id: number
   ) => {
-    if (e) {
-      setSelectedRadio((e?.target as HTMLInputElement).value!);
-    }
+    setSelectedRadio((e.target as HTMLInputElement).value);
+
     let newToken = [...selectedSubTokens];
-    let token = newToken.find((token) => token.id === id) as TokenProps;
+    let token = newToken.find((token) => token.id === id);
     setToken(token);
   };
 
-  // const setDefaultRadioButton = () => {
-  //   let newToken = [...selectedSubTokens];
-  //   let token = newToken.find((token) => token.id === 0) as TokenProps;
-  //   setToken(token);
-  // };
 
-  const { program, wallet, connection } = useProgram();
+  const depositSingleB = async () => {
 
-  let mint0 = selectedSubTokens[1].tokenAddress;
-  let mint1 = selectedSubTokens[2].tokenAddress;
-
-  const depositSingleB = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("deposited B");
     if (!wallet) {
-      return;
+      return
     }
     if (!program) {
-      return;
+      return
     }
 
     const [amm, ammBump] = await PublicKey.findProgramAddress(
@@ -113,16 +132,17 @@ const Liquidity = () => {
 
     let sourceTokenAddress = await tk.getAssociatedTokenAddress(
       mint0,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
     let liqTokenAddress = await tk.getAssociatedTokenAddress(
       poolMint,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
     // Pool token amount to deposit on one side
     const depositAmount = 10000;
+
 
     const tradingTokensToPoolTokens = (
       sourceAmount: number,
@@ -162,20 +182,17 @@ const Liquidity = () => {
           poolMint: poolMint,
           destination: liqTokenAddress,
           tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      }
-    );
-  };
+        }
+      })
+  }
 
-  const depositSingleA = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("deposited A");
+  const depositSingleA = async () => {
 
     if (!wallet) {
-      return;
+      return
     }
     if (!program) {
-      return;
+      return
     }
 
     const [amm, ammBump] = await PublicKey.findProgramAddress(
@@ -205,16 +222,17 @@ const Liquidity = () => {
 
     let sourceTokenAddress = await tk.getAssociatedTokenAddress(
       mint0,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
     let liqTokenAddress = await tk.getAssociatedTokenAddress(
       poolMint,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
     // Pool token amount to deposit on one side
     const depositAmount = 10000;
+
 
     const tradingTokensToPoolTokens = (
       sourceAmount: number,
@@ -250,21 +268,17 @@ const Liquidity = () => {
           poolMint: poolMint,
           destination: liqTokenAddress,
           tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      }
-    );
-  };
+        }
+      })
+  }
 
-  const depositAll = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    console.log("deposited All");
-
+  const depositAll = async () => {
     if (!wallet) {
-      return;
+      return
     }
     if (!program) {
-      return;
+      return
     }
 
     const [amm, ammBump] = await PublicKey.findProgramAddress(
@@ -294,32 +308,33 @@ const Liquidity = () => {
 
     let sourceTokenAddress = await tk.getAssociatedTokenAddress(
       mint0,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
     let destTokenAddress = await tk.getAssociatedTokenAddress(
       mint1,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
     let liqTokenAddress = await tk.getAssociatedTokenAddress(
       poolMint,
-      wallet.publicKey
+      wallet.publicKey,
     );
 
-    const poolTokenAmount = 10000;
+    const poolTokenAmount = 10000
 
     const poolMintInfo = await getMint(connection, poolMint);
     const supply = Number(poolMintInfo.supply);
     const swapTokenA = await getAccount(connection, vaultSource);
     const tokenAAmount = Math.floor(
-      (Number(swapTokenA.amount) * poolTokenAmount) / supply
+      (Number(swapTokenA.amount) * poolTokenAmount / supply)
     );
 
     const swapTokenB = await getAccount(connection, vaultDest);
     const tokenBAmount = Math.floor(
-      Number(swapTokenB.amount) * poolTokenAmount
-    );
+      (Number(swapTokenB.amount) * poolTokenAmount)
+    )
+
 
     await program.rpc.depositAll(
       new anchor.BN(poolTokenAmount),
@@ -337,25 +352,22 @@ const Liquidity = () => {
           destination: liqTokenAddress,
           owner: wallet.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
-        },
+        }
       }
-    );
-  };
+    )
+  }
 
-  const handlePairChange = (value: any) => {
-    setSelectedTokens(value);
-    setSelectedSubTokens(value.subToken);
-    console.log(value)
-    // setDefaultRadioButton()
+  //   const handleTokenChange = (id: number) => {
+  //     const newItem = [...token]
+  const handleSubToken = () => {
+    setSelectedSubTokens(selectedTokens.subToken);
   };
-
-  console.log(selectedRadio);
 
   useEffect(() => {
-    handleTokenName(null, selectedSubTokens[0].id);
-    setSelectedRadio(selectedSubTokens[0].tokenName) 
+    handleSubToken();
+  }, [selectedTokens]);
 
-  }, [selectedSubTokens]);
+
 
   return (
     <div className="fixed inset-0 overflow-y-auto mt-10">
@@ -383,32 +395,21 @@ const Liquidity = () => {
                 <Switch
                   checked={removeLiquidity}
                   onChange={setRemoveLiquidity}
-                  className={`${
-                    removeLiquidity ? "bg-[#126499]" : "bg-[#126499]"
-                  }
+                  className={`${removeLiquidity ? "bg-[#126499]" : "bg-[#126499]"}
                 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                 >
                   <span className="sr-only">Use setting</span>
                   <span
                     aria-hidden="true"
-                    className={`${
-                      removeLiquidity ? "translate-x-9" : "translate-x-0"
-                    }
+                    className={`${removeLiquidity ? "translate-x-9" : "translate-x-0"
+                      }
             pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                   />
                 </Switch>
               </div>
             </div>
             {!removeLiquidity ? (
-              <form
-                onSubmit={
-                  token.id === 0
-                    ? depositAll
-                    : token.id === 1
-                    ? depositSingleA
-                    : depositSingleB
-                }
-              >
+              <form>
                 {/* From */}
                 <div className="bg-[#141041] relative p-2 w-full rounded-2xl">
                   <div className="flex relative w-full justify-between">
@@ -416,10 +417,10 @@ const Liquidity = () => {
                       <div className="mb-2">
                         <Listbox
                           value={selectedTokens}
-                          onChange={handlePairChange}
+                          onChange={setSelectedTokens}
                         >
                           <div className="relative mt-1">
-                            <Listbox.Button className="relative border p-1 w-full cursor-default rounded-lg py-2 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                            <Listbox.Button className="relative w-full cursor-default rounded-lg py-2 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
                               <span className="truncate flex items-center justify-between">
                                 {selectedTokens.name} <BiCaretDown />
                               </span>
@@ -435,12 +436,11 @@ const Liquidity = () => {
                                   <Listbox.Option
                                     key={id}
                                     className={({ active }) =>
-                                      `relative cursor-default select-none py-2 flex text-left pl-4 ${
-                                        active ? "" : ""
+                                      `relative cursor-default select-none py-2 flex text-left pl-4 ${active ? "" : ""
                                       }`
                                     }
                                     value={token}
-                                    // onClick={handleSubToken}
+                                    onClick={handleSubToken}
                                   >
                                     <div>{token.name}</div>
                                   </Listbox.Option>
@@ -456,20 +456,13 @@ const Liquidity = () => {
                     {selectedTokens.subToken.map((item) => (
                       <div
                         key={item.id}
-                        onChange={() =>
-                          handleTokenName(window.event as any, item.id)
-                        }
+                        onChange={() => handleTokenName(window.event, item.id)}
                       >
                         <input
                           type="radio"
-                          onChange={() =>
-                            handleTokenName(window.event as any, item.id)
-                          }
                           value={item.tokenName}
                           name={item.name}
                           id={item.id.toString()}
-                          checked = {item.tokenName === selectedRadio}
-                          required
                         />{" "}
                         <label htmlFor={item.id.toString()}>
                           Add {item.tokenName}
@@ -491,20 +484,11 @@ const Liquidity = () => {
                         <input
                           type="number"
                           placeholder="1000"
-                          className="bg-transparent border outline-none w-2/3 p-2"
-                          value={userAmount}
-                          onChange={handleValue}
-                          required
+                          className="bg-transparent border outline-none w-2/3 p-2 "
                         />
 
-                        <div className="border w-1/3 flex gap-2 items-center justify-center">
-                          <Image
-                            src={token.icon}
-                            alt="token"
-                            height={30}
-                            width={30}
-                          />{" "}
-                          {token.tokenName}
+                        <div className="border w-1/3 flex items-center justify-center">
+                          <Image src={token.icon} alt="token" />
                         </div>
                       </div>
 
@@ -520,10 +504,7 @@ const Liquidity = () => {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="flex justify-center bg-[#512DA8] w-full mt-6 py-3 font-bold rounded-[20px] hover:bg-opacity-80"
-                >
+                <button className="flex justify-center bg-[#512DA8] w-full mt-6 py-3 font-bold rounded-[20px] hover:bg-opacity-80">
                   Add Liquidity
                 </button>
               </form>
