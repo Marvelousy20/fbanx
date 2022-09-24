@@ -3,7 +3,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { utils } from "@project-serum/anchor";
 import { BiCaretDown } from "react-icons/bi";
 import { useProgram } from "../../hooks/useProgram";
-import {Connection,PublicKey} from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import * as tk from "@solana/spl-token"
 import * as anchor from "@project-serum/anchor";
 
@@ -12,7 +12,6 @@ import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
 import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
-import { token } from "@project-serum/anchor/dist/cjs/utils";
 import { getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const TRADING_FEE_NUMERATOR = 25;
 const TRADING_FEE_DENOMINATOR = 10000;
@@ -81,6 +80,7 @@ const Liquidity = () => {
   console.log("selectedSubToken:", selectedSubTokens);
   console.log("selectedToken:", selectedTokens);
   console.log("selectedRadio", selectedRadio);
+  const { program, wallet, connection } = useProgram();
   console.log("token", token);
 
   const handleTokenName = (
@@ -95,38 +95,213 @@ const Liquidity = () => {
   };
 
 
-  const { program, wallet, connection } = useProgram();
+  const depositSingleB = async () => {
+
+    if (!wallet) {
+      return
+    }
+    if (!program) {
+      return
+    }
+
+    const [amm, ammBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("amm"), mint0.toBuffer(), mint1.toBuffer()],
+      program.programId
+    );
+
+    const [poolAuthority, bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("authority"), amm.toBuffer()],
+      program.programId
+    );
+
+    const [vaultSource, vault0bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault0"), amm.toBuffer()],
+      program.programId
+    );
+
+    const [vaultDest, vault1bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault1"), amm.toBuffer()],
+      program.programId
+    );
+
+    const [poolMint, poolBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("pool_mint"), amm.toBuffer()],
+      program.programId
+    );
+
+    let sourceTokenAddress = await tk.getAssociatedTokenAddress(
+      mint0,
+      wallet.publicKey,
+    );
+
+    let liqTokenAddress = await tk.getAssociatedTokenAddress(
+      poolMint,
+      wallet.publicKey,
+    );
+
+    // Pool token amount to deposit on one side
+    const depositAmount = 10000;
+
+
+    const tradingTokensToPoolTokens = (
+      sourceAmount: number,
+      swapSourceAmount: number,
+      poolAmount: number
+    ): number => {
+      const tradingFee =
+        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
+      const sourceAmountPostFee = sourceAmount - tradingFee;
+      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
+      return Math.floor(poolAmount * (root - 1));
+    };
+
+    const poolMintInfo = await getMint(connection, poolMint);
+    const supply = Number(poolMintInfo.supply);
+
+    const swapTokenB = await getAccount(connection, vaultDest);
+
+    const poolTokenBAmount = tradingTokensToPoolTokens(
+      depositAmount,
+      Number(swapTokenB.amount),
+      supply
+    );
+
+    // Depositing token B into swap
+    await program.rpc.depositSingle(
+      new anchor.BN(depositAmount),
+      new anchor.BN(poolTokenBAmount),
+      {
+        accounts: {
+          amm: amm,
+          authority: poolAuthority,
+          owner: wallet.publicKey,
+          source: sourceTokenAddress,
+          swapTokenA: vaultSource,
+          swapTokenB: vaultDest,
+          poolMint: poolMint,
+          destination: liqTokenAddress,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        }
+      })
+  }
+
+  const depositSingleA = async () => {
+
+    if (!wallet) {
+      return
+    }
+    if (!program) {
+      return
+    }
+
+    const [amm, ammBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("amm"), mint0.toBuffer(), mint1.toBuffer()],
+      program.programId
+    );
+
+    const [poolAuthority, bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("authority"), amm.toBuffer()],
+      program.programId
+    );
+
+    const [vaultSource, vault0bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault0"), amm.toBuffer()],
+      program.programId
+    );
+
+    const [vaultDest, vault1bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault1"), amm.toBuffer()],
+      program.programId
+    );
+
+    const [poolMint, poolBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("pool_mint"), amm.toBuffer()],
+      program.programId
+    );
+
+    let sourceTokenAddress = await tk.getAssociatedTokenAddress(
+      mint0,
+      wallet.publicKey,
+    );
+
+    let liqTokenAddress = await tk.getAssociatedTokenAddress(
+      poolMint,
+      wallet.publicKey,
+    );
+
+    // Pool token amount to deposit on one side
+    const depositAmount = 10000;
+
+
+    const tradingTokensToPoolTokens = (
+      sourceAmount: number,
+      swapSourceAmount: number,
+      poolAmount: number
+    ): number => {
+      const tradingFee =
+        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
+      const sourceAmountPostFee = sourceAmount - tradingFee;
+      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
+      return Math.floor(poolAmount * (root - 1));
+    };
+
+    const poolMintInfo = await getMint(connection, poolMint);
+    const supply = Number(poolMintInfo.supply);
+    const swapTokenA = await getAccount(connection, vaultSource);
+    const poolTokenAAmount = tradingTokensToPoolTokens(
+      depositAmount,
+      Number(swapTokenA.amount),
+      supply
+    );
+    await program.rpc.depositSingle(
+      new anchor.BN(depositAmount),
+      new anchor.BN(poolTokenAAmount),
+      {
+        accounts: {
+          amm: amm,
+          authority: poolAuthority,
+          owner: wallet.publicKey,
+          source: sourceTokenAddress,
+          swapTokenA: vaultSource,
+          swapTokenB: vaultDest,
+          poolMint: poolMint,
+          destination: liqTokenAddress,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        }
+      })
+  }
+
 
   const depositAll = async () => {
-    if (!wallet){
-        return
+    if (!wallet) {
+      return
     }
-    if (!program){
-        return
+    if (!program) {
+      return
     }
 
-    const [amm,ammBump] = await PublicKey.findProgramAddress(
-      [utf8.encode("amm"),mint0.toBuffer(),mint1.toBuffer()],
+    const [amm, ammBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("amm"), mint0.toBuffer(), mint1.toBuffer()],
       program.programId
     );
 
-    const [poolAuthority,bump] = await PublicKey.findProgramAddress(
-      [utf8.encode("authority"),amm.toBuffer()],
+    const [poolAuthority, bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("authority"), amm.toBuffer()],
       program.programId
     );
 
-    const [vaultSource,vault0bump] = await PublicKey.findProgramAddress(
-      [utf8.encode("vault0"),amm.toBuffer()],
+    const [vaultSource, vault0bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault0"), amm.toBuffer()],
       program.programId
     );
 
-    const [vaultDest,vault1bump] =  await PublicKey.findProgramAddress(
-      [utf8.encode("vault1"),amm.toBuffer()],
+    const [vaultDest, vault1bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault1"), amm.toBuffer()],
       program.programId
     );
 
-    const [poolMint,poolBump] = await PublicKey.findProgramAddress(
-      [utf8.encode("pool_mint"),amm.toBuffer()],
+    const [poolMint, poolBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("pool_mint"), amm.toBuffer()],
       program.programId
     );
 
@@ -147,16 +322,16 @@ const Liquidity = () => {
 
     const poolTokenAmount = 10000
 
-    const poolMintInfo = await getMint(connection,poolMint);
+    const poolMintInfo = await getMint(connection, poolMint);
     const supply = Number(poolMintInfo.supply);
-    const swapTokenA = await getAccount(connection,vaultSource);
+    const swapTokenA = await getAccount(connection, vaultSource);
     const tokenAAmount = Math.floor(
-      (Number(swapTokenA.amount) * poolTokenAmount / supply )
+      (Number(swapTokenA.amount) * poolTokenAmount / supply)
     );
 
-    const swapTokenB = await getAccount(connection,vaultDest);
+    const swapTokenB = await getAccount(connection, vaultDest);
     const tokenBAmount = Math.floor(
-      (Number(swapTokenB.amount) * poolTokenAmount )
+      (Number(swapTokenB.amount) * poolTokenAmount)
     )
 
 
@@ -165,128 +340,21 @@ const Liquidity = () => {
       new anchor.BN(tokenAAmount),
       new anchor.BN(tokenBAmount),
       {
-      accounts : {
-          amm : amm,
-          poolAuthority :poolAuthority ,
-          sourceAInfo : sourceTokenAddress, //user Token account A
-          sourceBInfo : destTokenAddress, //user Token account B
-          vaultTokenA : vaultSource ,
-          vaultTokenB : vaultDest,
-          poolMint :poolMint,
-          destination : liqTokenAddress ,
-          owner : wallet.publicKey ,
-          tokenProgram : TOKEN_PROGRAM_ID, 
+        accounts: {
+          amm: amm,
+          poolAuthority: poolAuthority,
+          sourceAInfo: sourceTokenAddress, //user Token account A
+          sourceBInfo: destTokenAddress, //user Token account B
+          vaultTokenA: vaultSource,
+          vaultTokenB: vaultDest,
+          poolMint: poolMint,
+          destination: liqTokenAddress,
+          owner: wallet.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        }
       }
-  })
-  const depositSingleA = async() => {
-
-    // Pool token amount to deposit on one side
-    const depositAmount = 10000;
-
-
-    const tradingTokensToPoolTokens = (
-      sourceAmount: number,
-      swapSourceAmount: number,
-      poolAmount: number
-    ): number => {
-      const tradingFee =
-        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
-      const sourceAmountPostFee = sourceAmount - tradingFee;
-      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
-      return Math.floor(poolAmount * (root - 1));
-    };
-
-    const poolMintInfo = await getMint(connection,poolMint);
-    const supply = Number(poolMintInfo.supply);
-    const swapTokenA = await getAccount(connection,vaultSource);
-    const poolTokenAAmount = tradingTokensToPoolTokens(
-      depositAmount,
-      Number(swapTokenA.amount),
-      supply
-    );
-
-    // const swapTokenB = await getAccount(connection,vaultDest);
-
-    // const poolTokenBAmount = tradingTokensToPoolTokens(
-    //   depositAmount,
-    //   Number(swapTokenB.amount),
-    //   supply
-    // );
-
-    // Depositing token A into swap
-    await program.rpc.depositSingle(
-      new anchor.BN(depositAmount),
-        new anchor.BN(poolTokenAAmount),
-      {
-      accounts : {
-          amm : amm,
-          authority :poolAuthority ,
-          owner : wallet.publicKey ,
-          source : sourceTokenAddress,
-          swapTokenA :vaultSource ,
-          swapTokenB : vaultDest,
-          poolMint :poolMint,
-          destination : liqTokenAddress  ,
-          tokenProgram : TOKEN_PROGRAM_ID, 
-      }
-    })
+    )
   }
-
-  const depositSingleB = async() => {
-
-    // Pool token amount to deposit on one side
-    const depositAmount = 10000;
-
-
-    const tradingTokensToPoolTokens = (
-      sourceAmount: number,
-      swapSourceAmount: number,
-      poolAmount: number
-    ): number => {
-      const tradingFee =
-        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
-      const sourceAmountPostFee = sourceAmount - tradingFee;
-      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
-      return Math.floor(poolAmount * (root - 1));
-    };
-
-    const poolMintInfo = await getMint(connection,poolMint);
-    const supply = Number(poolMintInfo.supply);
-    // const swapTokenA = await getAccount(connection,vaultSource);
-    // const poolTokenAAmount = tradingTokensToPoolTokens(
-    //   depositAmount,
-    //   Number(swapTokenA.amount),
-    //   supply
-    // );
-
-    const swapTokenB = await getAccount(connection,vaultDest);
-
-    const poolTokenBAmount = tradingTokensToPoolTokens(
-      depositAmount,
-      Number(swapTokenB.amount),
-      supply
-    );
-
-    // Depositing token B into swap
-    await program.rpc.depositSingle(
-      new anchor.BN(depositAmount),
-        new anchor.BN(poolTokenBAmount),
-      {
-      accounts : {
-          amm : amm,
-          authority :poolAuthority ,
-          owner : wallet.publicKey ,
-          source : sourceTokenAddress,
-          swapTokenA :vaultSource ,
-          swapTokenB : vaultDest,
-          poolMint :poolMint,
-          destination : liqTokenAddress  ,
-          tokenProgram : TOKEN_PROGRAM_ID, 
-      }
-    })
-  }
-
-}
 
   //   const handleTokenChange = (id: number) => {
   //     const newItem = [...token]
@@ -332,9 +400,8 @@ const Liquidity = () => {
                   <span className="sr-only">Use setting</span>
                   <span
                     aria-hidden="true"
-                    className={`${
-                      removeLiquidity ? "translate-x-9" : "translate-x-0"
-                    }
+                    className={`${removeLiquidity ? "translate-x-9" : "translate-x-0"
+                      }
             pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                   />
                 </Switch>
@@ -368,8 +435,7 @@ const Liquidity = () => {
                                   <Listbox.Option
                                     key={id}
                                     className={({ active }) =>
-                                      `relative cursor-default select-none py-2 flex text-left pl-4 ${
-                                        active ? "" : ""
+                                      `relative cursor-default select-none py-2 flex text-left pl-4 ${active ? "" : ""
                                       }`
                                     }
                                     value={token}
@@ -421,7 +487,7 @@ const Liquidity = () => {
                         />
 
                         <div className="border w-1/3 flex items-center justify-center">
-                          <Image src = {token.icon} alt = "token" />
+                          <Image src={token.icon} alt="token" />
                         </div>
                       </div>
 
