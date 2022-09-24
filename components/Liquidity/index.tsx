@@ -19,7 +19,9 @@ const TRADING_FEE_DENOMINATOR = 10000;
 
 const utf8 = utils.bytes.utf8
 import { Switch } from "@headlessui/react";
+
 import RemoveLiquidity from "./RemoveLiquidity";
+
 
 interface TokenProps {
   id: number;
