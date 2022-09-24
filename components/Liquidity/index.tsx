@@ -12,7 +12,6 @@ import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
 import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
-import { token } from "@project-serum/anchor/dist/cjs/utils";
 import { getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const TRADING_FEE_NUMERATOR = 25;
 const TRADING_FEE_DENOMINATOR = 10000;
@@ -158,6 +157,7 @@ const Liquidity = () => {
           tokenProgram : TOKEN_PROGRAM_ID, 
       }
   })
+  //
   const depositSingleA = async() => {
 
     // Pool token amount to deposit on one side
