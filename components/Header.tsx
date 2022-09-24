@@ -2,14 +2,19 @@ import React from "react";
 import Link from "next/link";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const Header: React.FC = () => {
   const router = useRouter();
 
   return (
-    <div className="flex justify-between items-center px-4 md:px-12 py-8 fixed w-full z-[1000000]">
+    <div className="flex justify-between items-center px-4 md:px-12 py-4 fixed w-full z-[1000000]">
       <div className="flex items-center gap-x-12">
-        <div className="text-3xl font-bold">LOGO</div>
+        <div className="text-3xl font-bold cursor-pointer">
+          <Link href="/">
+            <Image src="/logo.png" alt = "logo"  height={100} width={100} />
+          </Link>
+        </div>
 
         <div className="grid grid-cols-3 gap-x-8">
           <div>

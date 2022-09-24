@@ -3,8 +3,8 @@ import { Listbox, Transition } from "@headlessui/react";
 import { utils } from "@project-serum/anchor";
 import { BiCaretDown } from "react-icons/bi";
 import { useProgram } from "../../hooks/useProgram";
-import {Connection,PublicKey} from '@solana/web3.js';
-import * as tk from "@solana/spl-token"
+import { Connection, PublicKey } from "@solana/web3.js";
+import * as tk from "@solana/spl-token";
 import * as anchor from "@project-serum/anchor";
 
 import Image from "next/image";
@@ -14,17 +14,13 @@ import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
 import { token } from "@project-serum/anchor/dist/cjs/utils";
 import { getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import logo from "../../public/logo.png";
 const TRADING_FEE_NUMERATOR = 25;
 const TRADING_FEE_DENOMINATOR = 10000;
 
-const utf8 = utils.bytes.utf8
+const utf8 = utils.bytes.utf8;
 import { Switch } from "@headlessui/react";
 import RemoveLiquidity from "./RemoveLiquidity";
-
-interface TokenProps {
-  id: number;
-  name: string;
-}
 
 const tokens = [
   {
@@ -32,9 +28,27 @@ const tokens = [
     name: "FBNX/USDT",
     poolAddress: "",
     subToken: [
-      { id: 0, tokenName: "FBNX/USDT", icon: Btc, name: "tokens" },
-      { id: 1, tokenName: "FBNX", icon: Btc, name: "tokens" },
-      { id: 2, tokenName: "USDT", icon: Usdt, name: "tokens" },
+      {
+        id: 0,
+        tokenName: "FBNX/USDT",
+        icon: Btc,
+        name: "tokens",
+        tokenAddress: "0x1",
+      },
+      {
+        id: 1,
+        tokenName: "FBNX",
+        icon: logo,
+        name: "tokens",
+        tokenAddress: "0x12",
+      },
+      {
+        id: 2,
+        tokenName: "USDT",
+        icon: Usdt,
+        name: "tokens",
+        tokenAddress: "0x13",
+      },
     ],
   },
 
@@ -43,9 +57,27 @@ const tokens = [
     name: "FBNX/USDC",
     poolAddress: "",
     subToken: [
-      { id: 0, tokenName: "FBNX/USDC", icon: Btc, name: "tokens" },
-      { id: 1, tokenName: "FBNX", icon: Btc, name: "tokens" },
-      { id: 2, tokenName: "USDC", icon: Usdc, name: "tokens" },
+      {
+        id: 0,
+        tokenName: "FBNX/USDC",
+        icon: Btc,
+        name: "tokens",
+        tokenAddress: "0x21",
+      },
+      {
+        id: 1,
+        tokenName: "FBNX",
+        icon: logo,
+        name: "tokens",
+        tokenAddress: "0x22",
+      },
+      {
+        id: 2,
+        tokenName: "USDC",
+        icon: Usdc,
+        name: "tokens",
+        tokenAddress: "0x23",
+      },
     ],
   },
   {
@@ -53,13 +85,38 @@ const tokens = [
     name: "FBNX/SOL",
     poolAddress: "",
     subToken: [
-      { id: 0, tokenName: "FBNX/SOL", icon: Btc, name: "tokens" },
-      { id: 1, tokenName: "FBNX", icon: Btc, name: "tokens" },
-      { id: 2, tokenName: "SOL", icon: Sol, name: "tokens" },
+      {
+        id: 0,
+        tokenName: "FBNX/SOL",
+        icon: Btc,
+        name: "tokens",
+        tokenAddress: "0x31",
+      },
+      {
+        id: 1,
+        tokenName: "FBNX",
+        icon: logo,
+        name: "tokens",
+        tokenAddress: "0x32",
+      },
+      {
+        id: 2,
+        tokenName: "SOL",
+        icon: Sol,
+        name: "tokens",
+        tokenAddress: "0x33",
+      },
     ],
   },
 ];
 
+interface TokenProps {
+  id: number;
+  tokenName: string;
+  icon: any;
+  name: string;
+  tokenAddress: string;
+}
 // const mintPool = [{
 //   id:1,
 //   name : 'FBNX/USDT',
@@ -75,7 +132,8 @@ const Liquidity = () => {
   const [selectedRadio, setSelectedRadio] = useState(
     selectedSubTokens[0].tokenName
   );
-  const [token, setToken] = useState(selectedSubTokens[0]);
+  const [token, setToken] = useState<TokenProps>(selectedSubTokens[0]);
+
   console.log("selectedSubToken:", selectedSubTokens);
   console.log("selectedToken:", selectedTokens);
   console.log("selectedRadio", selectedRadio);
@@ -88,205 +146,215 @@ const Liquidity = () => {
     setSelectedRadio((e.target as HTMLInputElement).value);
 
     let newToken = [...selectedSubTokens];
-    let token = newToken.find((token) => token.id === id);
+    let token = newToken.find((token) => token.id === id) as TokenProps;
     setToken(token);
   };
 
-
   const { program, wallet, connection } = useProgram();
 
-  const depositAll = async () => {
-    if (!wallet){
-        return
+  let mint0 = selectedSubTokens[1].tokenAddress;
+  let mint1 = selectedSubTokens[2].tokenAddress;
+
+  console.log(mint0, mint1);
+
+  const depositAll = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("depositedAll")
+
+    if (!wallet) {
+      return;
     }
-    if (!program){
-        return
+    if (!program) {
+      return;
     }
 
-    const [amm,ammBump] = await PublicKey.findProgramAddress(
-      [utf8.encode("amm"),mint0.toBuffer(),mint1.toBuffer()],
+    const [amm, ammBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("amm"), mint0.toBuffer(), mint1.toBuffer()],
       program.programId
     );
 
-    const [poolAuthority,bump] = await PublicKey.findProgramAddress(
-      [utf8.encode("authority"),amm.toBuffer()],
+    const [poolAuthority, bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("authority"), amm.toBuffer()],
       program.programId
     );
 
-    const [vaultSource,vault0bump] = await PublicKey.findProgramAddress(
-      [utf8.encode("vault0"),amm.toBuffer()],
+    const [vaultSource, vault0bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault0"), amm.toBuffer()],
       program.programId
     );
 
-    const [vaultDest,vault1bump] =  await PublicKey.findProgramAddress(
-      [utf8.encode("vault1"),amm.toBuffer()],
+    const [vaultDest, vault1bump] = await PublicKey.findProgramAddress(
+      [utf8.encode("vault1"), amm.toBuffer()],
       program.programId
     );
 
-    const [poolMint,poolBump] = await PublicKey.findProgramAddress(
-      [utf8.encode("pool_mint"),amm.toBuffer()],
+    const [poolMint, poolBump] = await PublicKey.findProgramAddress(
+      [utf8.encode("pool_mint"), amm.toBuffer()],
       program.programId
     );
 
     let sourceTokenAddress = await tk.getAssociatedTokenAddress(
       mint0,
-      wallet.publicKey,
+      wallet.publicKey
     );
 
     let destTokenAddress = await tk.getAssociatedTokenAddress(
       mint1,
-      wallet.publicKey,
+      wallet.publicKey
     );
 
     let liqTokenAddress = await tk.getAssociatedTokenAddress(
       poolMint,
-      wallet.publicKey,
+      wallet.publicKey
     );
 
-    const poolTokenAmount = 10000
+    const poolTokenAmount = 10000;
 
-    const poolMintInfo = await getMint(connection,poolMint);
+    const poolMintInfo = await getMint(connection, poolMint);
     const supply = Number(poolMintInfo.supply);
-    const swapTokenA = await getAccount(connection,vaultSource);
+    const swapTokenA = await getAccount(connection, vaultSource);
     const tokenAAmount = Math.floor(
-      (Number(swapTokenA.amount) * poolTokenAmount / supply )
+      (Number(swapTokenA.amount) * poolTokenAmount) / supply
     );
 
-    const swapTokenB = await getAccount(connection,vaultDest);
+    const swapTokenB = await getAccount(connection, vaultDest);
     const tokenBAmount = Math.floor(
-      (Number(swapTokenB.amount) * poolTokenAmount )
-    )
-
+      Number(swapTokenB.amount) * poolTokenAmount
+    );
 
     await program.rpc.depositAll(
       new anchor.BN(poolTokenAmount),
       new anchor.BN(tokenAAmount),
       new anchor.BN(tokenBAmount),
       {
-      accounts : {
-          amm : amm,
-          poolAuthority :poolAuthority ,
-          sourceAInfo : sourceTokenAddress, //user Token account A
-          sourceBInfo : destTokenAddress, //user Token account B
-          vaultTokenA : vaultSource ,
-          vaultTokenB : vaultDest,
-          poolMint :poolMint,
-          destination : liqTokenAddress ,
-          owner : wallet.publicKey ,
-          tokenProgram : TOKEN_PROGRAM_ID, 
+        accounts: {
+          amm: amm,
+          poolAuthority: poolAuthority,
+          sourceAInfo: sourceTokenAddress, //user Token account A
+          sourceBInfo: destTokenAddress, //user Token account B
+          vaultTokenA: vaultSource,
+          vaultTokenB: vaultDest,
+          poolMint: poolMint,
+          destination: liqTokenAddress,
+          owner: wallet.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        },
       }
-  })
-  const depositSingleA = async() => {
-
-    // Pool token amount to deposit on one side
-    const depositAmount = 10000;
-
-
-    const tradingTokensToPoolTokens = (
-      sourceAmount: number,
-      swapSourceAmount: number,
-      poolAmount: number
-    ): number => {
-      const tradingFee =
-        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
-      const sourceAmountPostFee = sourceAmount - tradingFee;
-      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
-      return Math.floor(poolAmount * (root - 1));
-    };
-
-    const poolMintInfo = await getMint(connection,poolMint);
-    const supply = Number(poolMintInfo.supply);
-    const swapTokenA = await getAccount(connection,vaultSource);
-    const poolTokenAAmount = tradingTokensToPoolTokens(
-      depositAmount,
-      Number(swapTokenA.amount),
-      supply
     );
+    const depositSingleA = async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    // const swapTokenB = await getAccount(connection,vaultDest);
+      // Pool token amount to deposit on one side
+      const depositAmount = 10000;
 
-    // const poolTokenBAmount = tradingTokensToPoolTokens(
-    //   depositAmount,
-    //   Number(swapTokenB.amount),
-    //   supply
-    // );
+      const tradingTokensToPoolTokens = (
+        sourceAmount: number,
+        swapSourceAmount: number,
+        poolAmount: number
+      ): number => {
+        const tradingFee =
+          (sourceAmount / 2) *
+          (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
+        const sourceAmountPostFee = sourceAmount - tradingFee;
+        const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
+        return Math.floor(poolAmount * (root - 1));
+      };
 
-    // Depositing token A into swap
-    await program.rpc.depositSingle(
-      new anchor.BN(depositAmount),
+      const poolMintInfo = await getMint(connection, poolMint);
+      const supply = Number(poolMintInfo.supply);
+      const swapTokenA = await getAccount(connection, vaultSource);
+      const poolTokenAAmount = tradingTokensToPoolTokens(
+        depositAmount,
+        Number(swapTokenA.amount),
+        supply
+      );
+
+      // const swapTokenB = await getAccount(connection,vaultDest);
+
+      // const poolTokenBAmount = tradingTokensToPoolTokens(
+      //   depositAmount,
+      //   Number(swapTokenB.amount),
+      //   supply
+      // );
+
+      // Depositing token A into swap
+      await program.rpc.depositSingle(
+        new anchor.BN(depositAmount),
         new anchor.BN(poolTokenAAmount),
-      {
-      accounts : {
-          amm : amm,
-          authority :poolAuthority ,
-          owner : wallet.publicKey ,
-          source : sourceTokenAddress,
-          swapTokenA :vaultSource ,
-          swapTokenB : vaultDest,
-          poolMint :poolMint,
-          destination : liqTokenAddress  ,
-          tokenProgram : TOKEN_PROGRAM_ID, 
-      }
-    })
-  }
-
-  const depositSingleB = async() => {
-
-    // Pool token amount to deposit on one side
-    const depositAmount = 10000;
-
-
-    const tradingTokensToPoolTokens = (
-      sourceAmount: number,
-      swapSourceAmount: number,
-      poolAmount: number
-    ): number => {
-      const tradingFee =
-        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
-      const sourceAmountPostFee = sourceAmount - tradingFee;
-      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
-      return Math.floor(poolAmount * (root - 1));
+        {
+          accounts: {
+            amm: amm,
+            authority: poolAuthority,
+            owner: wallet.publicKey,
+            source: sourceTokenAddress,
+            swapTokenA: vaultSource,
+            swapTokenB: vaultDest,
+            poolMint: poolMint,
+            destination: liqTokenAddress,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          },
+        }
+      );
     };
 
-    const poolMintInfo = await getMint(connection,poolMint);
-    const supply = Number(poolMintInfo.supply);
-    // const swapTokenA = await getAccount(connection,vaultSource);
-    // const poolTokenAAmount = tradingTokensToPoolTokens(
-    //   depositAmount,
-    //   Number(swapTokenA.amount),
-    //   supply
-    // );
+    const depositSingleB = async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    const swapTokenB = await getAccount(connection,vaultDest);
+      // Pool token amount to deposit on one side
+      const depositAmount = 10000;
 
-    const poolTokenBAmount = tradingTokensToPoolTokens(
-      depositAmount,
-      Number(swapTokenB.amount),
-      supply
-    );
+      const tradingTokensToPoolTokens = (
+        sourceAmount: number,
+        swapSourceAmount: number,
+        poolAmount: number
+      ): number => {
+        const tradingFee =
+          (sourceAmount / 2) *
+          (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
+        const sourceAmountPostFee = sourceAmount - tradingFee;
+        const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
+        return Math.floor(poolAmount * (root - 1));
+      };
 
-    // Depositing token B into swap
-    await program.rpc.depositSingle(
-      new anchor.BN(depositAmount),
+      const poolMintInfo = await getMint(connection, poolMint);
+      const supply = Number(poolMintInfo.supply);
+      // const swapTokenA = await getAccount(connection,vaultSource);
+      // const poolTokenAAmount = tradingTokensToPoolTokens(
+      //   depositAmount,
+      //   Number(swapTokenA.amount),
+      //   supply
+      // );
+
+      const swapTokenB = await getAccount(connection, vaultDest);
+
+      const poolTokenBAmount = tradingTokensToPoolTokens(
+        depositAmount,
+        Number(swapTokenB.amount),
+        supply
+      );
+
+      // Depositing token B into swap
+      await program.rpc.depositSingle(
+        new anchor.BN(depositAmount),
         new anchor.BN(poolTokenBAmount),
-      {
-      accounts : {
-          amm : amm,
-          authority :poolAuthority ,
-          owner : wallet.publicKey ,
-          source : sourceTokenAddress,
-          swapTokenA :vaultSource ,
-          swapTokenB : vaultDest,
-          poolMint :poolMint,
-          destination : liqTokenAddress  ,
-          tokenProgram : TOKEN_PROGRAM_ID, 
-      }
-    })
-  }
+        {
+          accounts: {
+            amm: amm,
+            authority: poolAuthority,
+            owner: wallet.publicKey,
+            source: sourceTokenAddress,
+            swapTokenA: vaultSource,
+            swapTokenB: vaultDest,
+            poolMint: poolMint,
+            destination: liqTokenAddress,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          },
+        }
+      );
+    };
+  };
 
-}
-
-  //   const handleTokenChange = (id: number) => {
+  //   const handleTokenChange = (id: number) = > {
   //     const newItem = [...token]
   const handleSubToken = () => {
     setSelectedSubTokens(selectedTokens.subToken);
@@ -295,8 +363,6 @@ const Liquidity = () => {
   useEffect(() => {
     handleSubToken();
   }, [selectedTokens]);
-
-
 
   return (
     <div className="fixed inset-0 overflow-y-auto mt-10">
@@ -324,7 +390,9 @@ const Liquidity = () => {
                 <Switch
                   checked={removeLiquidity}
                   onChange={setRemoveLiquidity}
-                  className={`${removeLiquidity ? "bg-[#126499]" : "bg-[#126499]"}
+                  className={`${
+                    removeLiquidity ? "bg-[#126499]" : "bg-[#126499]"
+                  }
                 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                 >
                   <span className="sr-only">Use setting</span>
@@ -339,7 +407,15 @@ const Liquidity = () => {
               </div>
             </div>
             {!removeLiquidity ? (
-              <form>
+              <form
+                onSubmit={
+                  token.id === 0
+                    ? depositAll
+                    : token.id === 1
+                    ? depositSingleA : token.id === 2
+                    ? depositSingleB : null
+                }
+              >
                 {/* From */}
                 <div className="bg-[#141041] relative p-2 w-full rounded-2xl">
                   <div className="flex relative w-full justify-between">
@@ -419,7 +495,12 @@ const Liquidity = () => {
                         />
 
                         <div className="border w-1/3 flex items-center justify-center">
-                          <Image src = {token.icon} alt = "token" />
+                          <Image
+                            src={token.icon}
+                            alt="token"
+                            height={40}
+                            width={40}
+                          />
                         </div>
                       </div>
 
@@ -435,7 +516,10 @@ const Liquidity = () => {
                   </div>
                 </div>
 
-                <button className="flex justify-center bg-[#512DA8] w-full mt-6 py-3 font-bold rounded-[20px] hover:bg-opacity-80">
+                <button
+                  type="submit"
+                  className="flex justify-center bg-[#512DA8] w-full mt-6 py-3 font-bold rounded-[20px] hover:bg-opacity-80"
+                >
                   Add Liquidity
                 </button>
               </form>
