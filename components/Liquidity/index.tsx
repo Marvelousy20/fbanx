@@ -12,7 +12,6 @@ import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
 import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
-import { token } from "@project-serum/anchor/dist/cjs/utils";
 import { getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import logo from "../../public/logo.png";
 const TRADING_FEE_NUMERATOR = 25;
@@ -240,6 +239,33 @@ const Liquidity = () => {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       }
+  })
+
+  const depositSingleA = async() => {
+
+    // Pool token amount to deposit on one side
+    const depositAmount = 10000;
+
+
+    const tradingTokensToPoolTokens = (
+      sourceAmount: number,
+      swapSourceAmount: number,
+      poolAmount: number
+    ): number => {
+      const tradingFee =
+        (sourceAmount / 2) * (TRADING_FEE_NUMERATOR / TRADING_FEE_DENOMINATOR);
+      const sourceAmountPostFee = sourceAmount - tradingFee;
+      const root = Math.sqrt(sourceAmountPostFee / swapSourceAmount + 1);
+      return Math.floor(poolAmount * (root - 1));
+    };
+
+    const poolMintInfo = await getMint(connection,poolMint);
+    const supply = Number(poolMintInfo.supply);
+    const swapTokenA = await getAccount(connection,vaultSource);
+    const poolTokenAAmount = tradingTokensToPoolTokens(
+      depositAmount,
+      Number(swapTokenA.amount),
+      supply
     );
     const depositSingleA = async (e: React.FormEvent) => {
       e.preventDefault();
