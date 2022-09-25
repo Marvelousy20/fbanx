@@ -1,12 +1,12 @@
-import React from 'react'
-// import Header from '../H'
+import React from "react";
+import Home from "./index";
 
 const swap = () => {
   return (
     <div>
-        {/* <Header /> */}
+      <Home />
     </div>
-  )
-}
+  );
+};
 
-export default swap
+export default swap;
