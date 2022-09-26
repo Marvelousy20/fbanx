@@ -1,5 +1,5 @@
 import React from 'react'
-import Liquidity from "../components/Liquidity"
+import Liquidity from "../components/Liquidity/AddLiquidity"
 import Header from '../components/Header'
 
 const liquidity = () => {

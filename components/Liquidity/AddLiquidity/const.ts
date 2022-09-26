@@ -4,7 +4,7 @@ import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
 import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
-import logo from "../../public/logo.png";
+import logo from "../../../public/logo.png";
 
 // FBNX/USDT
 export const fbanxUsdt = new Web3.PublicKey(
