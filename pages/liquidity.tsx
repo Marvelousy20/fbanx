@@ -6,7 +6,9 @@ const liquidity = () => {
   return (
     <div className='bg-[#161617] text-white h-screen'>
         <Header />
-        <Liquidity />
+        <div className='px-4 md:px-0'>
+          <Liquidity />
+        </div>
     </div>
   )
 }

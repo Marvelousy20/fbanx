@@ -8,15 +8,21 @@ const Header: React.FC = () => {
   const router = useRouter();
 
   return (
-    <div className="flex justify-between items-center px-4 md:px-12 py-4 fixed w-full z-[1000000]">
-      <div className="flex items-center gap-x-12">
-        <div className="text-3xl font-bold cursor-pointer">
+    <div className="flex pr-2 justify-between items-center md:px-12 py-4 fixed w-full z-[1000000]">
+      <div className="flex items-center gap-x-1 md:gap-x-12">
+        <div className="text-3xl font-bold cursor-pointer hidden md:block">
           <Link href="/">
             <Image src="/logo.png" alt = "logo"  height={100} width={100} />
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-x-8">
+        <div className="text-3xl font-bold block md:hidden cursor-pointer">
+          <Link href="/">
+            <Image src="/logo.png" alt = "logo"  height={50} width={50} />
+          </Link>
+        </div>
+
+        <div className="flex md:grid grid-cols-3 gap-x-2 md:gap-x-8">
           <div>
             <Link href="/swap">
               <a
