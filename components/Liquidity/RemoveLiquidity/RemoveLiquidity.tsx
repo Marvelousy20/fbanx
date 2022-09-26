@@ -466,12 +466,14 @@ const RemoveLiquidity = () => {
                 <input
                   type="number"
                   placeholder="1000"
-                  className="bg-transparent border outline-none w-2/3 p-2 "
+                  className="bg-transparent border outline-none w-3/5 md:w-2/3 p-2 "
                   onChange={handleValue}
                 />
 
-                <div className="border w-1/3 flex items-center justify-center">
+                <div className="border px-1 w-2/5 md:first:w-1/3 flex items-center justify-center">
                   <Image src={token.icon} alt="token" height={30} width={30} />
+                  {token.tokenName}
+
                 </div>
               </div>
 

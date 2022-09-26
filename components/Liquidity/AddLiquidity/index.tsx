@@ -344,7 +344,7 @@ const Liquidity = () => {
   }, [selectedSubTokens]);
 
   return (
-    <div className="fixed inset-0 overflow-y-auto mt-10">
+    <div className="fixed inset-0 overflow-y-auto mt-10 px-2 md:px-0">
       <div className="min-h-full flex justify-center items-center max-w-md mx-auto relative">
         <div
           style={{
@@ -467,7 +467,7 @@ const Liquidity = () => {
                   <div className="mt-3">
                     <div className="flex justify-between opacity-60 mb-2">
                       <p>Amount</p>
-                      <p>
+                      <p className="text-sm md:text-base">
                         Available <b>0</b> {token.tokenName}
                       </p>
                     </div>
@@ -477,19 +477,19 @@ const Liquidity = () => {
                         <input
                           type="number"
                           placeholder="1000"
-                          className="bg-transparent border outline-none w-2/3 p-2"
+                          className="bg-transparent border outline-none w-3/5 md:w-2/3 p-2"
                           value={userAmount}
                           onChange={handleValue}
                           required
                         />
 
-                        <div className="border w-1/3 flex gap-2 items-center justify-center">
+                        <div className="border px-1 w-2/5 md:w-1/3 flex gap-2 items-center justify-center text-sm md:text-base">
                           <Image
                             src={token.icon}
                             alt="token"
                             height={30}
                             width={30}
-                          />{" "}
+                          />
                           {token.tokenName}
                         </div>
                       </div>

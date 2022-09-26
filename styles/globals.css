@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 
+@media screen and (max-width: 355px) {
+  .wallet-adapter-button {
+    padding: 0 6px !important;
+    font-size: 14px !important;
+    line-height: 24px !important;
+  }
+}
+
 @layer base {
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {

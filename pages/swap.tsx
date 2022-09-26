@@ -3,7 +3,7 @@ import Home from "./index";
 
 const swap = () => {
   return (
-    <div>
+    <div className="px-4 md:px-0">
       <Home />
     </div>
   );

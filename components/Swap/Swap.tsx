@@ -176,7 +176,7 @@ const Swap = () => {
   }, [reverse]);
 
   return (
-    <div className="fixed inset-0 overflow-y-auto mt-10">
+    <div className="fixed inset-0 overflow-y-auto mt-10 px-2 md:px-0">
       <div className="min-h-full flex justify-center items-center max-w-md mx-auto relative">
         <div
           style={{
