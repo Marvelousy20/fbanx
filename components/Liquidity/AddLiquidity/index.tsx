@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { utils } from "@project-serum/anchor";
 import { BiCaretDown } from "react-icons/bi";
-import { useProgram } from "../../hooks/useProgram";
+import { useProgram } from "../../../hooks/useProgram";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as tk from "@solana/spl-token";
 import * as anchor from "@project-serum/anchor";
@@ -16,7 +16,7 @@ const TRADING_FEE_DENOMINATOR = 10000;
 
 const utf8 = utils.bytes.utf8;
 import { Switch } from "@headlessui/react";
-import RemoveLiquidity from "./RemoveLiquidity";
+import RemoveLiquidity from "../RemoveLiquidity/RemoveLiquidity";
 
 interface TokenProps {
   id: number;
@@ -44,11 +44,6 @@ const Liquidity = () => {
   );
   const [userAmount, setUserAmount] = useState(0);
 
-  // console.log("selectedSubToken:", selectedSubTokens);
-  // console.log("selectedToken:", selectedTokens);
-  // console.log("selectedRadio", selectedRadio);
-  // console.log("token", token);
-
   const handleValue = (e: React.FormEvent) => {
     setUserAmount(Number((e.target as HTMLInputElement).value));
   };
@@ -64,12 +59,6 @@ const Liquidity = () => {
     let token = newToken.find((token) => token.id === id) as TokenProps;
     setToken(token);
   };
-
-  // const setDefaultRadioButton = () => {
-  //   let newToken = [...selectedSubTokens];
-  //   let token = newToken.find((token) => token.id === 0) as TokenProps;
-  //   setToken(token);
-  // };
 
   const { program, wallet, connection } = useProgram();
 
@@ -345,16 +334,13 @@ const Liquidity = () => {
   const handlePairChange = (value: any) => {
     setSelectedTokens(value);
     setSelectedSubTokens(value.subToken);
-    console.log(value)
-    // setDefaultRadioButton()
   };
 
   console.log(selectedRadio);
 
   useEffect(() => {
     handleTokenName(null, selectedSubTokens[0].id);
-    setSelectedRadio(selectedSubTokens[0].tokenName) 
-
+    setSelectedRadio(selectedSubTokens[0].tokenName);
   }, [selectedSubTokens]);
 
   return (
@@ -468,7 +454,7 @@ const Liquidity = () => {
                           value={item.tokenName}
                           name={item.name}
                           id={item.id.toString()}
-                          checked = {item.tokenName === selectedRadio}
+                          checked={item.tokenName === selectedRadio}
                           required
                         />{" "}
                         <label htmlFor={item.id.toString()}>
