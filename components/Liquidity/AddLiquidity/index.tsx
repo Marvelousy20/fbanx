@@ -21,7 +21,7 @@ import RemoveLiquidity from "../RemoveLiquidity/RemoveLiquidity";
 interface TokenProps {
   id: number;
   tokenName: string;
-  icon: any;
+  icon?: any;
   name: string;
   tokenAddress: PublicKey;
 }
@@ -344,7 +344,7 @@ const Liquidity = () => {
   }, [selectedSubTokens]);
 
   return (
-    <div className="fixed inset-0 overflow-y-auto mt-10 px-2 md:px-0">
+    <div className="fixed inset-0 overflow-y-auto overflow-hiddenftext-base md:mt-10 px-2 md:px-0">
       <div className="min-h-full flex justify-center items-center max-w-md mx-auto relative">
         <div
           style={{
@@ -369,17 +369,15 @@ const Liquidity = () => {
                 <Switch
                   checked={removeLiquidity}
                   onChange={setRemoveLiquidity}
-                  className={`${
-                    removeLiquidity ? "bg-[#126499]" : "bg-[#126499]"
-                  }
+                  className={`${removeLiquidity ? "bg-[#126499]" : "bg-[#126499]"
+                    }
                 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                 >
                   <span className="sr-only">Use setting</span>
                   <span
                     aria-hidden="true"
-                    className={`${
-                      removeLiquidity ? "translate-x-9" : "translate-x-0"
-                    }
+                    className={`${removeLiquidity ? "translate-x-9" : "translate-x-0"
+                      }
             pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                   />
                 </Switch>
@@ -391,8 +389,8 @@ const Liquidity = () => {
                   token.id === 0
                     ? depositAll
                     : token.id === 1
-                    ? depositSingleA
-                    : depositSingleB
+                      ? depositSingleA
+                      : depositSingleB
                 }
               >
                 {/* From */}
@@ -421,12 +419,11 @@ const Liquidity = () => {
                                   <Listbox.Option
                                     key={id}
                                     className={({ active }) =>
-                                      `relative cursor-default select-none py-2 flex text-left pl-4 ${
-                                        active ? "" : ""
+                                      `relative cursor-default select-none py-2 flex text-left pl-4 ${active ? "" : ""
                                       }`
                                     }
                                     value={token}
-                                    // onClick={handleSubToken}
+                                  // onClick={handleSubToken}
                                   >
                                     <div>{token.name}</div>
                                   </Listbox.Option>
@@ -484,12 +481,13 @@ const Liquidity = () => {
                         />
 
                         <div className="border px-1 w-2/5 md:w-1/3 flex gap-2 items-center justify-center text-sm md:text-base">
-                          <Image
-                            src={token.icon}
+                          {token.icon && (<Image
+                            src={token?.icon}
                             alt="token"
                             height={30}
                             width={30}
-                          />
+                          />)}
+
                           {token.tokenName}
                         </div>
                       </div>

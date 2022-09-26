@@ -15,9 +15,7 @@ const Home: NextPage = () => {
 
       <main className='bg-[#161617] text-white h-screen'>
         <Header />
-        <div className='px-4 md:px-0'>
           <Swap />
-        </div>
       </main>
     </div>
   )

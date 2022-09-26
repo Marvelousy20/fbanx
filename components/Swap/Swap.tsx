@@ -18,7 +18,7 @@ import Sol from "cryptocurrency-icons/svg/color/sol.svg";
 import Btc from "cryptocurrency-icons/svg/color/btc.svg";
 
 
-
+import fbanx from '../../public/logo.png'
 import { fbanxMint, usdcMint, usdtMint, solMint } from "./const";
 
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
@@ -33,14 +33,14 @@ interface Props {
 }
 
 const FromItems = [
-  { id: 1, name: "FBANX", icon: Btc, address: fbanxMint },
+  { id: 1, name: "FBANX", icon: fbanx, address: fbanxMint },
   { id: 2, name: "USDT", icon: Usdt, address: usdtMint },
   { id: 3, name: "USDC", icon: Usdc, address: usdcMint },
   { id: 4, name: "SOL", icon: Sol, address: solMint },
 ];
 
 const ToItems = [
-  { id: 1, name: "FBANX", icon: Btc, address: fbanxMint },
+  { id: 1, name: "FBANX", icon: fbanx, address: fbanxMint },
   { id: 2, name: "USDT", icon: Usdt, address: usdtMint },
   { id: 3, name: "USDC", icon: Usdc, address: usdcMint },
   { id: 4, name: "SOL", icon: Sol, address: solMint },

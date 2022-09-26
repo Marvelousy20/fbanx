@@ -44,7 +44,7 @@ export const tokens = [
       {
         id: 0,
         tokenName: "FBNX/USDT",
-        icon: Btc,
+        // icon: Btc,
         name: "tokens",
         tokenAddress: fbanxUsdt,
       },
@@ -73,7 +73,7 @@ export const tokens = [
       {
         id: 0,
         tokenName: "FBNX/USDC",
-        icon: Btc,
+        // icon: Btc,
         name: "tokens",
         tokenAddress: fbanxUsdc,
       },
@@ -101,7 +101,7 @@ export const tokens = [
       {
         id: 0,
         tokenName: "FBNX/SOL",
-        icon: Btc,
+        // icon: Btc,
         name: "tokens",
         tokenAddress: fbanxSol,
       },

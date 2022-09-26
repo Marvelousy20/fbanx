@@ -27,7 +27,7 @@ const TRADING_FEE_DENOMINATOR = 10000;
 interface TokenProps {
   id: number;
   tokenName: string;
-  icon: any;
+  icon?: any;
   name: string;
   tokenAddress: PublicKey;
 }
@@ -351,7 +351,7 @@ const RemoveLiquidity = () => {
 
     feeAmount = Math.floor(
       (poolTokenAmount * OWNER_WITHDRAW_FEE_NUMERATOR) /
-        OWNER_WITHDRAW_FEE_DENOMINATOR
+      OWNER_WITHDRAW_FEE_DENOMINATOR
     );
 
     const tokenAAmount = Math.floor(
@@ -416,8 +416,7 @@ const RemoveLiquidity = () => {
                           <Listbox.Option
                             key={id}
                             className={({ active }) =>
-                              `relative cursor-default select-none py-2 flex text-left pl-4 ${
-                                active ? "" : ""
+                              `relative cursor-default select-none py-2 flex text-left pl-4 ${active ? "" : ""
                               }`
                             }
                             value={token}
@@ -456,7 +455,7 @@ const RemoveLiquidity = () => {
           <div className="mt-3">
             <div className="flex justify-between opacity-60 mb-2">
               <p>Amount</p>
-              <p>
+              <p className="text-sm md:text-base">
                 Available <b>0</b> {token.tokenName}
               </p>
             </div>
@@ -470,8 +469,11 @@ const RemoveLiquidity = () => {
                   onChange={handleValue}
                 />
 
-                <div className="border px-1 w-2/5 md:first:w-1/3 flex items-center justify-center">
-                  <Image src={token.icon} alt="token" height={30} width={30} />
+                <div className="border text-sm md:text-base px-1 w-2/5 md:first:w-1/3 flex items-center gap-2 justify-center">
+                  {token.icon && (
+                    <Image src={token.icon} alt="token" height={30} width={30} />
+
+                  )}
                   {token.tokenName}
 
                 </div>
@@ -489,7 +491,7 @@ const RemoveLiquidity = () => {
           </div>
         </div>
 
-        <button type = "submit" className="flex justify-center bg-[#512DA8] w-full mt-6 py-3 font-bold rounded-[20px] hover:bg-opacity-80">
+        <button type="submit" className="flex justify-center bg-[#512DA8] w-full mt-6 py-3 font-bold rounded-[20px] hover:bg-opacity-80">
           Remove Liquidity
         </button>
       </form>
