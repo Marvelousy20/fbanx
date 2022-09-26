@@ -151,7 +151,7 @@ const Swap = () => {
 
     await program.rpc.swap(
       new anchor.BN(value),
-      new anchor.BN(SWAP_AMOUNT_IN),
+      new anchor.BN(0),
       {
         accounts: {
           poolAuthority: poolAuthority,
