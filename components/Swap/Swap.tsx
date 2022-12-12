@@ -15,7 +15,7 @@ import * as Web3 from '@solana/web3.js'
 import Usdt from "cryptocurrency-icons/svg/color/usdt.svg";
 import Usdc from "cryptocurrency-icons/svg/color/usdc.svg";
 import Sol from "cryptocurrency-icons/svg/color/sol.svg";
-import Btc from "cryptocurrency-icons/svg/color/btc.svg";
+ 
 
 
 import fbanx from '../../public/logo.png'
@@ -51,7 +51,7 @@ const Swap = () => {
   const [tokenBalance, setTokenBalance] = useState(0)
   const [reverse, setReserve] = useState<boolean>(false);
   const [swapFrom, setSwapFrom] = useState<Props>(FromItems[0]);
-  const [swapTo, setSwapTo] = useState<Props>(ToItems[0]);
+  const [swapTo, setSwapTo] = useState<Props>(ToItems[1]);
   const [value, setValue] = useState<number>(0);
   const [mintSource, setMintSource] = useState<PublicKey>(FromItems[0].address);
   const [mintDestination, setMintDestination] = useState<PublicKey>(
@@ -92,14 +92,7 @@ const Swap = () => {
   } 
 
   showBalance()
-  
-  
-  
 
-  
-  // connection.getParsedTokenAccountsByOwner(
-  //   wallet.publicKey, { mint: tokenPublicKey }
-  // );
 
   const swaps = async () => {
     if (!wallet) {
@@ -108,12 +101,6 @@ const Swap = () => {
     if (!program) {
       return;
     }
-
-    
-
-    connection.getParsedTokenAccountsByOwner(
-      wallet.publicKey, { mint: tokenPublicKey }
-    );
 
     const [amm, _ammBump] = await PublicKey.findProgramAddress(
       [utf8.encode("amm"), mintSource.toBuffer(), mintDestination.toBuffer()],
@@ -234,7 +221,7 @@ const Swap = () => {
                     <input
                       type="number"
                       required
-                      placeholder="5"
+                      placeholder="0"
                       className="text-right bg-transparent outline-none"
                       onChange={handleValue}
                     />

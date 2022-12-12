@@ -10,7 +10,7 @@ import * as anchor from "@project-serum/anchor";
 import Image from "next/image";
 import { tokens } from "./const";
 
-import { getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { createAssociatedTokenAccountInstruction, getAccount, getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const TRADING_FEE_NUMERATOR = 25;
 const TRADING_FEE_DENOMINATOR = 10000;
 
@@ -58,7 +58,7 @@ const Liquidity = () => {
     let newToken = [...selectedSubTokens];
     let token = newToken.find((token) => token.id === id) as TokenProps;
     setToken(token);
-  };
+  }; 
 
   const { program, wallet, connection } = useProgram();
 
@@ -110,6 +110,10 @@ const Liquidity = () => {
       wallet.publicKey
     );
 
+    
+
+    await tk.getOrCreateAssociatedTokenAccount
+
     // Pool token amount to deposit on one side
     const depositAmount = 10000;
 
@@ -150,7 +154,9 @@ const Liquidity = () => {
           swapTokenB: vaultDest,
           poolMint: poolMint,
           destination: liqTokenAddress,
+          rent : anchor.web3.SYSVAR_RENT_PUBKEY,
           tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram:  anchor.web3.SystemProgram.programId
         },
       }
     );
@@ -193,7 +199,7 @@ const Liquidity = () => {
     );
 
     let sourceTokenAddress = await tk.getAssociatedTokenAddress(
-      mint0,
+      mint1,
       wallet.publicKey
     );
 
@@ -238,7 +244,9 @@ const Liquidity = () => {
           swapTokenB: vaultDest,
           poolMint: poolMint,
           destination: liqTokenAddress,
+          rent : anchor.web3.SYSVAR_RENT_PUBKEY,
           tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram:  anchor.web3.SystemProgram.programId
         },
       }
     );
@@ -325,7 +333,9 @@ const Liquidity = () => {
           poolMint: poolMint,
           destination: liqTokenAddress,
           owner: wallet.publicKey,
+          rent : anchor.web3.SYSVAR_RENT_PUBKEY,
           tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram:  anchor.web3.SystemProgram.programId
         },
       }
     );

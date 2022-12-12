@@ -65,7 +65,8 @@
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "payer"
+                "account": "Amm",
+                "path": "amm"
               }
             ]
           }
@@ -113,12 +114,12 @@
         {
           "name": "feeAccount",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "destination",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "payer",
@@ -312,15 +313,25 @@
         {
           "name": "destination",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "owner",
-          "isMut": false,
           "isSigner": true
         },
         {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -370,7 +381,7 @@
         },
         {
           "name": "owner",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -396,10 +407,20 @@
         {
           "name": "destination",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "rent",
+          "isMut": false,
           "isSigner": false
         },
         {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -941,8 +962,5 @@
       "name": "UnsupportedCurveOperation",
       "msg": "The operation cannot be performed on the given curve"
     }
-  ],
-  "metadata": {
-    "address": "FzbA7oybquXL6sNn71hPU2RQh1kbRiDtCGbwmk34VFR2"
-  }
+  ]
 }
